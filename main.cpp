@@ -1,15 +1,23 @@
-#include <iostream>
-#include <raylib.h>
+#include <Game.hpp>
 
-const int screenWidth = 500;
-const int screenHeight = 800;
+const int screenWidth = 401;
+const int screenHeight = 801;
 
 int main(){
     InitWindow(screenWidth, screenHeight, "Tetris 1.0.0");
     SetTargetFPS(60);
 
+    // Init variables
+    srand(time(NULL));
+    Game tetris = Game(); 
+
     while(!WindowShouldClose()) {
+        tetris.Update(GetFrameTime());
+        tetris.HandleInput();
+
         BeginDrawing();
+        ClearBackground(Color(BLUE));
+        tetris.Draw();
 
         EndDrawing();
     }
