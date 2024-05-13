@@ -12,8 +12,10 @@ private:
     std::vector<Block> blocks;
     Grid grid;
     std::vector<Block> GetAllBlocks();
+    void MoveBlockBottom();
     void MoveBlockLeft();
     void MoveBlockRight();
+    void AddBlockToTheGrid();
     Block GetRandomBlock();
     Block currentBlock;
     Block nextBlock;

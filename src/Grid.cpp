@@ -19,21 +19,22 @@ void Grid::Draw() {
     }
 }
 
-bool Grid::IsCellOutside(Position pos, int moveRow, int moveCol) {
-    if(pos.col + moveCol < 0 ||
-       pos.col + moveCol >= width ||
-       pos.row + moveRow >= height)
-       return true;
-    return false;
+bool Grid::RotationSuccess(std::vector<Position> tiles ) {
+    for(Position tile: tiles) 
+        if(IsMovePossible(tile, 0, 0) != CAN_MOVE)
+            return false;
+
+    return true;
 }
 
-bool Grid::IsCellOutside(Position pos)
-{
-    if(pos.col < 0 ||
-       pos.col >= width ||
-       pos.row >= height)
-       return true;
-    return false;
+MoveTroubles Grid::IsMovePossible(Position pos, int moveRow, int moveCol) {
+    if(this->IsCellOutside(pos, moveRow, moveCol) != CAN_MOVE)
+        return WALL;
+
+    if(grid[pos.row + moveRow][pos.col + moveCol] != 0)
+        return BLOCK;
+    
+    return CAN_MOVE;
 }
 
 void Grid::Add(std::vector<Position> tiles, int blockId) {
@@ -42,3 +43,21 @@ void Grid::Add(std::vector<Position> tiles, int blockId) {
 }
 
 // Private Methods
+MoveTroubles Grid::IsCellOutside(Position pos, int moveRow, int moveCol) {
+    if(pos.col + moveCol < 0 ||
+       pos.col + moveCol >= width ||
+       pos.row + moveRow >= height ||
+       pos.row + moveRow < 0)
+       return WALL;
+    return CAN_MOVE;
+}
+
+MoveTroubles Grid::IsCellOutside(Position pos)
+{
+    if(pos.col < 0 ||
+       pos.col >= width ||
+       pos.row >= height ||
+       pos.row < 0)
+       return WALL;
+    return CAN_MOVE;
+}

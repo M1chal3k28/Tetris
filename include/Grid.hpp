@@ -7,6 +7,12 @@
 #include <Colors.hpp>
 #include <Position.hpp>
 
+enum MoveTroubles {
+    WALL,
+    BLOCK,
+    CAN_MOVE
+};
+
 class Grid
 {
 private:
@@ -14,14 +20,16 @@ private:
     const int width, height, cubeSize;
     std::vector<std::vector<int>> grid;
     std::vector<Color> cellColors;
+    MoveTroubles IsCellOutside(Position pos, int moveRow, int moveCol);
+    MoveTroubles IsCellOutside(Position pos);
     
 public:
     Grid();
     ~Grid();
 
     void Draw();
-    bool IsCellOutside(Position pos, int moveRow, int moveCol);
-    bool IsCellOutside(Position pos);
+    bool RotationSuccess(std::vector<Position> tiles);
+    MoveTroubles IsMovePossible(Position pos, int moveRow, int moveCol);
     void Add(std::vector<Position> tiles, int blockId);
 };
 

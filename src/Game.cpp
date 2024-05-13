@@ -17,37 +17,27 @@ void Game::Draw() {
 }
 
 void Game::Update(float deltaTime) {
+    // If block timer ends move block down
     if(blockTimer.UpdateTimer(deltaTime)) {
         blockTimer.StartTimer(timeUntilMove);
 
-        std::vector<Position> tiles = currentBlock.GetCellPositions();
-        bool flag = false;
-        for(Position tile: tiles) {
-            if((flag = grid.IsCellOutside(tile, 1, 0)))
-                break;
-        }
-
-        if(flag) {
-            // if sent block faster restart timer in proper way
-            timeUntilMove = BLOCK_TIMER;
-            blockTimer.StartTimer(timeUntilMove);
-            canMove = true;
-            
-            // add block to the grid
-            grid.Add(currentBlock.GetCellPositions(), currentBlock.getId());
-            currentBlock = nextBlock;
-            nextBlock = this->GetRandomBlock();
-        } else    
-            currentBlock.Move(1, 0);
+        this->MoveBlockBottom();
     }
 }
 
+void Game::AddBlockToTheGrid() {
+    // add block to the grid
+    grid.Add(this->currentBlock.GetCellPositions(), this->currentBlock.getId());
+    this->currentBlock = this->nextBlock;
+    this->nextBlock = this->GetRandomBlock();
+}
+
 void Game::HandleInput() {
+    // if fast falling player can't move
     if(!this->canMove)
         return;
 
     int keyPressed = GetKeyPressed();
-
     switch(keyPressed) {
         case KEY_LEFT:{
             this->MoveBlockLeft();
@@ -59,29 +49,56 @@ void Game::HandleInput() {
 
         case KEY_UP: {
             currentBlock.Rotate();
-            std::vector<Position> tiles = currentBlock.GetCellPositions();
-            for(Position tile: tiles) {
-                if(grid.IsCellOutside(tile)) {
-                    currentBlock.UndoRotation();
-                    break;
-                }
+            std::vector<Position> tiles = this->currentBlock.GetCellPositions();
+            std::cout << "====\nBlock id - " << this->currentBlock.getId() << "\n"; 
+            for(auto tile : tiles) {
+                std::cout << "Col - " << tile.col << " Row - "<< tile.row << "\n";
             }
+
+            if(!this->grid.RotationSuccess(tiles)) 
+                this->currentBlock.UndoRotation();
+            
         } break;
 
         case KEY_DOWN:
-            timeUntilMove = 0.01f;
-            blockTimer.StartTimer(timeUntilMove);
-            canMove = false;
+            this->timeUntilMove = 0.01f;
+            this->blockTimer.StartTimer(timeUntilMove);
+            this->canMove = false;
         break;
     }
 }
 
 // Private Methods
-void Game::MoveBlockLeft() {
+void Game::MoveBlockBottom() {
     std::vector<Position> tiles = currentBlock.GetCellPositions();
+    MoveTroubles flag = CAN_MOVE;
+    for(Position tile: tiles)
+        if((flag = grid.IsMovePossible(tile, 1, 0)) != CAN_MOVE)
+            break;
+
+    if(flag != CAN_MOVE) {
+        // if sent block faster restart timer in proper way
+        timeUntilMove = BLOCK_TIMER;
+        blockTimer.StartTimer(timeUntilMove);
+        canMove = true;
+
+        // Addblock to the grid and change currentBlock to nextBlock
+        this->AddBlockToTheGrid();
+        return;
+    }
+    // Move Only when it's possible
+    currentBlock.Move(1, 0);
+}
+void Game::MoveBlockLeft() {
+    std::vector<Position> tiles = this->currentBlock.GetCellPositions();
 
     for(Position tile: tiles) {
-        if(grid.IsCellOutside(tile, 0, -1))
+        if(grid.IsMovePossible(tile, 0, -1) == BLOCK) {
+            AddBlockToTheGrid();
+            return;
+        }
+
+        if(grid.IsMovePossible(tile, 0, -1) == WALL)
             return;
     }
     
@@ -92,7 +109,12 @@ void Game::MoveBlockRight() {
     std::vector<Position> tiles = currentBlock.GetCellPositions();
 
     for(Position tile: tiles) {
-        if(grid.IsCellOutside(tile, 0, 1))
+        if(grid.IsMovePossible(tile, 0, 1) == BLOCK) {
+            AddBlockToTheGrid();
+            return;
+        }
+
+        if(grid.IsMovePossible(tile, 0, 1) == WALL)
             return;
     }
     
