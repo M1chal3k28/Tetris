@@ -6,6 +6,8 @@
 #include <iostream>
 #include <Colors.hpp>
 #include <Position.hpp>
+#include <memory>
+#include <State.hpp>
 
 enum MoveTroubles {
     WALL,
@@ -28,6 +30,7 @@ public:
     ~Grid();
 
     void Draw();
+    void Update(std::shared_ptr<States::State> gameState);
     bool RotationSuccess(std::vector<Position> tiles);
     MoveTroubles IsMovePossible(Position pos, int moveRow, int moveCol);
     void Add(std::vector<Position> tiles, int blockId);

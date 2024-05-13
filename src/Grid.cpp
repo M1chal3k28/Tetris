@@ -1,4 +1,5 @@
 #include <Grid.hpp>
+#include <bits/stdc++.h>
 
 // Public Methods
 Grid::Grid() :
@@ -17,6 +18,22 @@ void Grid::Draw() {
             DrawRectangle(col * this->cubeSize + 1, row * this->cubeSize + 1, this->cubeSize - 1, this->cubeSize - 1, this->cellColors[cellVal]);
         }
     }
+}
+
+void Grid::Update(std::shared_ptr<States::State> gameState) {
+    std::vector<int> rowsToErase;
+    for(int row = 0; row < height; row++)
+        if(std::find(grid[row].begin(), grid[row].end(), 0) == grid[row].end())
+            rowsToErase.push_back(row);
+
+    for(int row : rowsToErase) {
+        grid.erase(grid.begin() + row);
+        grid.insert(grid.begin(), std::vector<int>(this->width, 0));
+    } 
+
+    for(int i = 0; i < width; i++) 
+        if(grid[0][i] != 0)
+            gameState->SetState(States::GameOver);
 }
 
 bool Grid::RotationSuccess(std::vector<Position> tiles ) {

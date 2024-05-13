@@ -15,6 +15,11 @@ set(SOURCE_FILES
     src/Colors.cpp
     src/Game.cpp
     src/Timer.cpp
+    src/ResourceManager.cpp
+    src/Movement.cpp
+    src/State.cpp
+    src/FontManager.cpp
+    src/MyFont.cpp
 )
 
 add_executable(Tetris main.cpp ${SOURCE_FILES})
