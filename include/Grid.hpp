@@ -30,10 +30,12 @@ public:
     ~Grid();
 
     void Draw();
-    void Update(std::shared_ptr<States::State> gameState);
+    void Update(std::shared_ptr<int> score);
     bool RotationSuccess(std::vector<Position> tiles);
     MoveTroubles IsMovePossible(Position pos, int moveRow, int moveCol);
     void Add(std::vector<Position> tiles, int blockId);
+    bool BlockFits(std::vector<Position> tiles);
+    void Clear();
 };
 
 #endif

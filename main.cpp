@@ -1,7 +1,7 @@
 #include <Game.hpp>
 
-const int screenWidth = 701;
-const int screenHeight = 801;
+const int screenWidth = 751;
+const int screenHeight = 821;
 
 int main(){
     InitWindow(screenWidth, screenHeight, "Tetris 1.0.0");
@@ -15,7 +15,7 @@ int main(){
         tetris.Update(GetFrameTime());
 
         BeginDrawing();
-        ClearBackground(Color(BLUE));
+        ClearBackground(Color({55, 53, 255, 255}));
         tetris.Draw();
 
         EndDrawing();

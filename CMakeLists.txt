@@ -5,6 +5,7 @@ include(CTest)
 enable_testing()
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/src/thirdparty)
 add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty)
 
 set(SOURCE_FILES

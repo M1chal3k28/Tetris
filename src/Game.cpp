@@ -1,5 +1,7 @@
 #include <Game.hpp>
 #include <cstdlib>
+#include <cstring>
+#include <string>
 
 Game::Game() 
     : grid(), 
@@ -7,8 +9,10 @@ Game::Game()
       currentBlock(this->GetRandomBlock()),
       nextBlock(this->GetRandomBlock()),
       blockTimer(),
+      deathCooldown(),
       canMove(true),
       fontManager(),
+      score(new int(0)),
       gameState(new States::State) {
 
         // Load Main font
@@ -36,8 +40,15 @@ void Game::Draw() {
         // Draw game stuff (for gameover, paused and game there is same stuff)
         case States::GameOver: {
             // Game over Screen
+            fontManager.GetFontByName(MAIN_FONT)->drawText("GAME OVER !", 581.5, 600);
         } case States::Paused:
           case States::Game : {
+            std::string scoreInString = std::to_string(*this->score);
+            char * scoreInText = new char [scoreInString.length()+9];
+            std::strcpy (scoreInText, "SCORE: ");
+            std::strcat (scoreInText, scoreInString.c_str());
+
+            fontManager.GetFontByName(MAIN_FONT)->drawText(scoreInText, 581.5, 100);
             grid.Draw();
             currentBlock.Draw();
         } break;
@@ -46,7 +57,7 @@ void Game::Draw() {
 }
 
 void Game::Update(float deltaTime) {
-    this->HandleInput();
+    this->HandleInput(deltaTime);
     switch(this->gameState->GetState()) {
         // Update menu stuff
         case States::Menu : {
@@ -64,20 +75,28 @@ void Game::Update(float deltaTime) {
 
             // Update grid
             // Grid will check if any line is fulfilled
-            grid.Update(this->gameState);
+            grid.Update(this->score);
         } break;
     }
 }
 
 void Game::AddBlockToTheGrid() {
+    bool DoNotFit = !grid.BlockFits(this->currentBlock.GetCellPositions());
+
     // add block to the grid
     grid.Add(this->currentBlock.GetCellPositions(), this->currentBlock.getId());
+    if(DoNotFit) {
+        deathCooldown.StartTimer(RESET_COOLDOWN);
+        this->gameState->SetState(States::GameOver);
+        return;
+    }
+
     this->currentBlock = this->nextBlock;
     this->nextBlock = this->GetRandomBlock();
 }
 
 // Private Methods
-void Game::HandleInput() {
+void Game::HandleInput(float deltaTime) {
     int keyPressed = GetKeyPressed();
 
     switch(this->gameState->GetState()) {
@@ -116,6 +135,13 @@ void Game::HandleInput() {
                 } break;
             }
         } break;
+        
+        case States::GameOver: {
+            if(deathCooldown.UpdateTimer(deltaTime) && keyPressed != 0) {
+                this->Reset();
+                this->gameState->SetState(States::Game);
+            }
+        } break;
 
         // Handle input for menu
         case States::Menu: {
@@ -127,6 +153,15 @@ void Game::HandleInput() {
             }
         };
     }
+}
+
+void Game::Reset() {
+    grid.Clear();
+    this->blocks = this->GetAllBlocks();
+    this->currentBlock = this->GetRandomBlock();
+    this->nextBlock = this->GetRandomBlock();
+    this->blockTimer.StartTimer(BLOCK_TIMER);
+    *this->score = 0;
 }
 
 void Game::MoveBlockBottom() {

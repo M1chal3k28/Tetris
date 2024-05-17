@@ -15,25 +15,29 @@ void Grid::Draw() {
         for(int col = 0; col < width; col++) {
             int cellVal = this->grid[row][col];
             // Draw cell
-            DrawRectangle(col * this->cubeSize + 1, row * this->cubeSize + 1, this->cubeSize - 1, this->cubeSize - 1, this->cellColors[cellVal]);
+            DrawRectangle(col * this->cubeSize + 11, row * this->cubeSize + 11, this->cubeSize - 1, this->cubeSize - 1, this->cellColors[cellVal]);
         }
     }
 }
 
-void Grid::Update(std::shared_ptr<States::State> gameState) {
+void Grid::Update(std::shared_ptr<int> score) {
     std::vector<int> rowsToErase;
     for(int row = 0; row < height; row++)
         if(std::find(grid[row].begin(), grid[row].end(), 0) == grid[row].end())
             rowsToErase.push_back(row);
 
+    // Add score 
+    if(!rowsToErase.empty()) {
+        if(rowsToErase.size() > 1) 
+            *score += (rowsToErase.size()) * 100 * 1.5;
+        else 
+            *score += (rowsToErase.size()) * 100 ;
+    }
+
     for(int row : rowsToErase) {
         grid.erase(grid.begin() + row);
         grid.insert(grid.begin(), std::vector<int>(this->width, 0));
     } 
-
-    for(int i = 0; i < width; i++) 
-        if(grid[0][i] != 0)
-            gameState->SetState(States::GameOver);
 }
 
 bool Grid::RotationSuccess(std::vector<Position> tiles ) {
@@ -57,6 +61,18 @@ MoveTroubles Grid::IsMovePossible(Position pos, int moveRow, int moveCol) {
 void Grid::Add(std::vector<Position> tiles, int blockId) {
     for(Position tile: tiles) 
         grid[tile.row][tile.col] = blockId;
+}
+
+bool Grid::BlockFits(std::vector<Position> tiles) {
+    for(Position tile: tiles)
+        if(grid[tile.row][tile.col] != 0)  
+            return false;
+
+    return true;
+}
+
+void Grid::Clear() {
+    this->grid = std::vector<std::vector<int>>(this->height, std::vector<int>(this->width, 0));
 }
 
 // Private Methods

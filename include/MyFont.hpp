@@ -13,6 +13,7 @@ private:
     Color color;
 
     void setPosition(int x, int y);
+    void MeasureFont(const char * tex);
     void placeInTheCenterX(const char *text);
     void placeInTheCenter(const char *text);
 

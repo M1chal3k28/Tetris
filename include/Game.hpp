@@ -10,6 +10,7 @@
 #include <memory> 
 
 #define BLOCK_TIMER .5f
+#define RESET_COOLDOWN 1.f
 #define MAIN_FONT "MainFont"
 
 class Game {
@@ -17,7 +18,8 @@ private:
     std::vector<Block> blocks;
     Grid grid;
     std::vector<Block> GetAllBlocks();
-    void HandleInput();
+    void HandleInput(float deltaTime);
+    void Reset();
     void MoveBlock(const Position direction);
     void MoveBlockBottom();
     void AddBlockToTheGrid();
@@ -27,8 +29,11 @@ private:
 
     float timeUntilMove = .5f;
 
+    Timer deathCooldown;
     Timer blockTimer;
     bool canMove;
+
+    std::shared_ptr<int> score;
 
     std::shared_ptr<States::State> gameState;
 
