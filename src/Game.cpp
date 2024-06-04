@@ -49,8 +49,26 @@ void Game::Draw() {
             std::strcat (scoreInText, scoreInString.c_str());
 
             fontManager.GetFontByName(MAIN_FONT)->drawText(scoreInText, 581.5, 100);
+            fontManager.GetFontByName(MAIN_FONT)->drawText("Next:", 581.5, 180);
+            DrawRectangleRounded({470, 215, 220, 180}, 0.4f, 4, Color({255, 255, 255, 50}));
+            this->nextBlock.DrawNextBlock();
+            
             grid.Draw();
-            currentBlock.Draw();
+            currentBlock.Draw(11, 11);
+            switch (nextBlock.getId())
+            {
+            case 3:
+                nextBlock.Draw(380, 285);
+                break;
+
+            case 4:
+                nextBlock.Draw(380, 265);
+                break;
+            
+            default:
+                nextBlock.Draw(400, 260);
+                break;
+            }
         } break;
         
     }

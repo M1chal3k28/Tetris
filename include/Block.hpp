@@ -24,7 +24,8 @@ public:
     Block();
     ~Block();
 
-    void Draw();
+    void Draw(int offsetX, int offsetY);
+    void DrawNextBlock();
     void Move(int row, int col);
     std::vector<Position> GetCellPositions();
     const int getId() { return this->id; }

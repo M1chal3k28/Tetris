@@ -9,7 +9,14 @@ Block::Block()
 
 Block::~Block() = default;
 
-void Block::Draw() {
+void Block::Draw(int offsetX, int offsetY) {
+    std::vector<Position> tiles = this->GetCellPositions();
+    for(Position item: tiles) {
+        DrawRectangle(item.col * this->cellSize + offsetX, item.row * this->cellSize + offsetY, this->cellSize - 1, this->cellSize - 1, cellColors[this->id]);
+    }
+}
+
+void Block::DrawNextBlock() {
     std::vector<Position> tiles = this->GetCellPositions();
     for(Position item: tiles) {
         DrawRectangle(item.col * this->cellSize + 11, item.row * this->cellSize + 11, this->cellSize - 1, this->cellSize - 1, cellColors[this->id]);
